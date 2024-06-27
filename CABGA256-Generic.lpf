@@ -1,0 +1,56 @@
+# This LPF provides a set of generic names for the pinouts of the EXT_BOARD for the iCESugar Pro module.
+# Depending on your application you will need to make certain customizations to these definitions, this is geared to general applications.
+# Each pin definition is seperated by a space and each function area (onboard peripherals and pin blocks) are seperated with an blank comment
+# For additional information on the functions of each individual pins search the SITE number (ex: P6 for CLK) in the pinout CSV
+
+# Guide to LPF terms
+
+# LOCATE COMP - connects a signal name within your verilog design to a physical pin
+# Usage: LOCATE COMP "verilog_signal_name" SITE "FPGA_Pin_(see_datasheet_or_CSV)";
+# Usage (Arrays): LOCATE COMP "verilog_array[pin_number] SITE "FPGA_Pin";
+
+# IOBUF PORT - defines physical pin properties
+# Usage: IOBUF PORT "verilog_signal_name" ATTRIBUTE=PROPERTY;
+
+# Attribute: IO_TYPE
+# Exact electrical characteristics of each definition is documented in 3.12-3.17 of the datasheet for the ECP5
+# LVCMOS33 is used as a basic 3.3V IO setting.
+# IO_TYPE=CHARACTERISTIC
+
+# Attribute: OPENDRAIN - if a pin acts as an open drain (off by default)
+# OPENDRAIN=ON/OFF
+
+# Attribute: DRIVE - current in mA to drive a signal with
+# DRIVE=4/8/12/16
+
+# Attribute: SLEWRATE - desired slew rate (LVTTL/LVCMOS types only)
+# SLEWRATE=FAST/SLOW
+
+# Attribute: PULLMODE - if a pin is pulled up or down or none (down by default)
+# PULLMODE=UP/DOWN/NONE
+
+# Attribute: TERMINATION - parallel termination (like that used in the CAN bus) resistor in ohms (OFF by default)
+# TERMINATION=OFF/50/75/100
+
+# Attribute: DIFFRESISTOR - differential termination resistor in ohms (OFF by default)
+# DIFFRESISTOR=OFF/100
+
+# FREQUENCY PORT - constrains a signal to a certain frequency, mostly for clock input signals
+# Usage: FREQUENCY PORT "verilog_signal_name" 000 M/K/HZ;
+
+# Begin Onboard IO definitions [Verilog definition(s) in square brackets]
+#
+# External clock (25MHz) [input wire ext_clk] 
+
+LOCATE COMP "ext_clk" SITE "P6";
+IOBUF PORT "ext_clk" IO_TYPE=LVCMOS33;
+FREQUENCY PORT "ext_clk" 25 MHZ;
+
+# Reset Signal [input wire rst,]
+
+LOCATE COMP "rst" SITE "L14";
+IOBUF PORT "rst" IO_TYPE=LVCMOS33;
+
+# DRAM
+# []
+
