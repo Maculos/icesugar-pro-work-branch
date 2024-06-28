@@ -1,0 +1,148 @@
+# This LPF provides a set of generic names for the pinouts of the EXT_BOARD for the iCESugar Pro module.
+# Depending on your application you will need to make certain customizations to these definitions, this is geared to general applications.
+# Each pin definition is seperated by a space and each function area (onboard peripherals and pin blocks) are seperated with an blank comment
+# For additional information on the functions of each individual pins search the SITE number (ex: P6 for CLK) in the pinout CSV
+# Also, neither the module nor the EXT_BOARD appear to have differential routings other than the USB port so expect difficulties with those
+
+# Guide to LPF terms
+
+# LOCATE COMP - connects a signal name within your verilog design to a physical pin
+# Usage: LOCATE COMP "verilog_signal_name" SITE "FPGA_Pin_(see_datasheet_or_CSV)";
+# Usage (Arrays): LOCATE COMP "verilog_array[pin_number] SITE "FPGA_Pin";
+
+# IOBUF PORT - defines physical pin properties
+# Usage: IOBUF PORT "verilog_signal_name" ATTRIBUTE=PROPERTY;
+
+# Attribute: IO_TYPE
+# Exact electrical characteristics of each definition is documented in 3.12-3.17 of the datasheet for the ECP5
+# LVCMOS33 is used as a basic 3.3V IO setting.
+# IO_TYPE=CHARACTERISTIC
+
+# Attribute: OPENDRAIN - if a pin acts as an open drain (off by default)
+# OPENDRAIN=ON/OFF
+
+# Attribute: DRIVE - current in mA to drive a signal with
+# DRIVE=4/8/12/16
+
+# Attribute: SLEWRATE - desired slew rate (LVTTL/LVCMOS types only)
+# SLEWRATE=FAST/SLOW
+
+# Attribute: PULLMODE - if a pin is pulled up or down or none (down by default)
+# PULLMODE=UP/DOWN/NONE
+
+# Attribute: TERMINATION - parallel termination (like that used in the CAN bus) resistor in ohms (OFF by default)
+# TERMINATION=OFF/50/75/100
+
+# Attribute: DIFFRESISTOR - differential termination resistor in ohms (OFF by default)
+# DIFFRESISTOR=OFF/100
+
+# FREQUENCY PORT - constrains a signal to a certain frequency, mostly for clock input signals
+# Usage: FREQUENCY PORT "verilog_signal_name" 000 M/K/HZ;
+
+BLOCK RESETPATHS;
+BLOCK ASYNCPATHS;
+
+# Begin Onboard IO definitions [Verilog definition(s) in square brackets]
+
+# External clock (25MHz) [input wire ext_clk,] 
+
+LOCATE COMP "ext_clk" SITE "P6";
+IOBUF PORT "ext_clk" IO_TYPE=LVCMOS33;
+FREQUENCY PORT "ext_clk" 25 MHZ;
+
+# Reset Signal [input wire rst,]
+
+LOCATE COMP "rst" SITE "L14";
+IOBUF PORT "rst" IO_TYPE=LVCMOS33;
+
+# iCELink UART
+# [output reg UART0_TX,]
+# [input wire UART0_RX,]
+
+LOCATE COMP "UART0_TX" SITE "B9";
+IOBUF PORT "UART0_TX" IO_TYPE=LVCMOS33;
+LOCATE COMP "UART0_RX" SITE "A9";
+IOBUF PORT "UART0_RX" IO_TYPE=LVCMOS33;
+
+# RGB LED
+# [output reg RGB_RED, RGB_GREEN, RGB_BLUE,]
+
+LOCATE COMP "RGB_RED" SITE "B11";
+IOBUF PORT "RGB_RED" IO_TYPE=LVCMOS33;
+LOCATE COMP "RGB_GREEN" SITE "A11";
+IOBUF PORT "RGB_GREEN" IO_TYPE=LVCMOS33;
+LOCATE COMP "RGB_BLUE" SITE "A12";
+IOBUF PORT "RGB_BLUE" IO_TYPE=LVCMOS33;
+
+
+# SD Card in SPI mode
+# Outputs use REG as it keeps the pin in the same state without need to refresh each cycle
+# [output reg SD_CLK,]
+# [output reg SD_CS_ACTIVE_LOW,]     Chip Select, Active when signal is LOW
+# [output reg SD_SO,]                Serial out, SD Card's Serial in
+# [input wire SD_SI,]                Serial in, SD Card's Serial out
+
+LOCATE COMP "SD_CLK" SITE "J12";
+IOBUF PORT "SD_CLK" IO_TYPE=LVCMOS33;
+IOBUF PORT "SD_CLK" SLEWRATE=FAST;
+
+LOCATE COMP "SD_CS_ACTIVE_LOW" SITE "G12";
+IOBUF PORT "SD_CS_ACTIVE_LOW" IO_TYPE=LVCMOS33;
+IOBUF PORT "SD_CS_ACTIVE_LOW" SLEWRATE=FAST;
+IOBUF PORT "SD_CS_ACTIVE_LOW" PULLMODE=UP;
+
+LOCATE COMP "SD_SO" SITE "H12";
+IOBUF PORT "SD_SO" IO_TYPE=LVCMOS33;
+IOBUF PORT "SD_SO" SLEWRATE=FAST;
+IOBUF PORT "SD_SO" PULLMODE=UP;
+
+LOCATE COMP "SD_SI" SITE "K12";
+IOBUF PORT "SD_SI" IO_TYPE=LVCMOS33;
+IOBUF PORT "SD_SI" SLEWRATE=FAST;
+IOBUF PORT "SD_SI" PULLMODE=UP;
+
+# SDRAM
+# [output wire SDRAM_CS_ACTIVE_LOW,]
+# [output wire SDRAM_CLK,]
+# [output wire SDRAM_CLK_EN,]
+# [output wire SDRAM_WRITE_EN_ACTIVE_LOW,]
+# [output wire SDRAM_CAS_ACTIVE_LOW,]
+# [output wire SDRAM_RAS_ACTIVE_LOW,]
+# [output wire [1:0] SDRAM_BANK_ADDR,]
+# [output wire [1:0] SDRAM_IO_MASKS,]       Pin 0 is Lower Mask, Pin 1 is Upper Mask
+# [output wire [12:0] SDRAM_ADDR,]          13 Bits combined Row and Col (See Datasheet)
+# [output wire [15:0] SDRAM_DATA,]          16 Bits Data I/O
+
+LOCATE COMP "SDRAM_CS_ACTIVE_LOW" SITE "A14";
+IOBUF PORT "SDRAM_CS_ACTIVE_LOW" IO_TYPE=LVCMOS33;
+IOBUF PORT "SDRAM_CS_ACTIVE_LOW" SLEWRATE=FAST;
+IOBUF PORT "SDRAM_CS_ACTIVE_LOW" PULLMODE=NONE;
+IOBUF PORT "SDRAM_CS_ACTIVE_LOW" DRIVE=4;
+
+# End Onboard IO definitions
+
+# Begin External IO definitions, Names formatted as PIN_DIMM_00SODIMM-PIN00_EXT_00EXT-BOARD-PIN00 [Verilog depends on application]
+
+LOCATE COMP "PIN_DIMM_41_EXT_00" SITE "A9";
+IOBUF PORT "PIN_DIMM_41_EXT_00" IO_TYPE=LVCMOS33;
+
+LOCATE COMP "PIN_DIMM_42_EXT_00" SITE "A11";
+IOBUF PORT "PIN_DIMM_42_EXT_00" IO_TYPE=LVCMOS33;
+
+LOCATE COMP "PIN_DIMM_44_EXT_00" SITE "A12";
+IOBUF PORT "PIN_DIMM_44_EXT_00" IO_TYPE=LVCMOS33;
+
+LOCATE COMP "PIN_DIMM_46_EXT_00" SITE "N12";
+IOBUF PORT "PIN_DIMM_46_EXT_00" IO_TYPE=LVCMOS33;
+
+LOCATE COMP "PIN_DIMM_48_EXT_00" SITE "P13";
+IOBUF PORT "PIN_DIMM_48_EXT_00" IO_TYPE=LVCMOS33;
+
+LOCATE COMP "PIN_DIMM_49_EXT_00" SITE "B8";
+IOBUF PORT "PIN_DIMM_49_EXT_00" IO_TYPE=LVCMOS33;
+
+LOCATE COMP "PIN_DIMM_51_EXT_00" SITE "A7";
+IOBUF PORT "PIN_DIMM_51_EXT_00" IO_TYPE=LVCMOS33;
+
+LOCATE COMP "PIN_DIMM_57_EXT_00" SITE "B7";
+IOBUF PORT "PIN_DIMM_57_EXT_00" IO_TYPE=LVCMOS33;
